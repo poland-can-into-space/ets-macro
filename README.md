@@ -1,10 +1,19 @@
 # EtsMacro
 
 You can define your ets module with one macro call.
+
 example
 ```
-use EtsMacro, @module_name
+use EtsMacro, MyEts
 ```
+this will generate a module with all ets functions and module_name as a first argument for any function that takes arguments.
+So, you will be able to do it like this.
+```
+MyEts.new([:set, :protected, :named_table]) 
+# equivalent of :ets.new(:user_lookup, [:set, :protected, :named_table])
+```
+less typing. clap clap
+
 
 this will define following functions under the given module name.
 ```
