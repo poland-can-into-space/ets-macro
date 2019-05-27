@@ -9,60 +9,12 @@ use EtsMacro, MyEts
 this will generate a module with all ets functions and module_name as a first argument for any function that takes arguments.
 So, you will be able to do it like this.
 ```
-MyEts.new([:set, :protected, :named_table]) 
-# equivalent of :ets.new(:user_lookup, [:set, :protected, :named_table])
+MyEts.new([:set, :protected, :named_table]) # is equivalent of :ets.new(MyEts, [:set, :protected, :named_table])
+# MyEts.all() == :ets.new
+# MyEts.lookup() == :ets.lookup(MyEts)
 ```
 less typing. clap clap
 
-
-this will define following functions under the given module name.
-```
-all/0
-delete/1
-delete/2
-delete_all_objects/1
-delete_object/2
-first/1
-give_away/3
-info/1
-info/2
-insert/2
-insert_new/2
-is_compiled_ms/1
-last/1
-lookup/2
-lookup_element/3
-match/1
-match/2
-match/3
-match_object/1
-match_object/2
-match_object/3
-match_spec_compile/1
-match_spec_run_r/3
-member/2
-new/2
-next/2
-prev/2
-rename/2
-safe_fixtable/2
-select/1
-select/2
-select/3
-select_count/2
-select_delete/2
-select_replace/2
-select_reverse/1
-select_reverse/2
-select_reverse/3
-setopts/2
-slot/2
-take/2
-update_counter/3
-update_counter/4
-update_element/3
-whereis/1
-```
 If you have any questions about ets, please refer to erlang's website's official document [here](http://erlang.org/doc/man/ets.html).
 
 
