@@ -20,14 +20,14 @@ defmodule EtsMacro do
               end
             1 ->
               quote do
-                def unquote(atom)(unquote_splicing(fn_args)) do
+                def unquote(atom)() do
                   :ets.unquote(atom)(unquote(module_name))
                 end
               end
             _ ->
               quote do
                 def unquote(atom)(unquote_splicing(fn_args)) do
-                  :ets.unquote(atom)(unquote(module_name), unquote(fn_args))
+                  :ets.unquote(atom)(unquote(module_name), unquote_splicing(fn_args))
                 end
               end
           end
