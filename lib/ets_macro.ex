@@ -5,29 +5,26 @@ defmodule EtsMacro do
 
   @doc """
   use EtsMacro, module_name
-  this will generate a module with all ets functions
+  this will generate a module with all ets functions and module_name as a first argument for any function that takes arguments
   """
   defmacro __using__(module_name) do
     quote do
       defmodule unquote(module_name) do
-        unquote(for {atom, fn_args} <- params(module_name) do
-          case length(fn_args) do
+        unquote(for {atom, fn_args} <- params() do
+          case fn_args do
             0 ->
               quote do
-                def unquote(atom)() do
-                  :ets.unquote(atom)()
-                end
+                def unquote(atom)(), do: :ets.unquote(atom)()
               end
             1 ->
               quote do
-                def unquote(atom)() do
-                  :ets.unquote(atom)(unquote(module_name))
-                end
+                def unquote(atom)(), do: :ets.unquote(atom)(unquote(module_name))
               end
-            _ ->
+            num ->
+              args = for i <- 0..num-2, do: dynamic_arg(Enum.at([:a, :b, :c], i));
               quote do
-                def unquote(atom)(unquote_splicing(fn_args)) do
-                  :ets.unquote(atom)(unquote(module_name), unquote_splicing(fn_args))
+                def unquote(atom)(unquote_splicing(args)) do
+                  :ets.unquote(atom)(unquote(module_name), unquote_splicing(args))
                 end
               end
           end
@@ -36,39 +33,11 @@ defmodule EtsMacro do
     end
   end
 
-  @doc """
-  same as the `use EtsMacro, module_name` but you can call it with EtsMacro.main()
-  """
-  defmacro main(module_name) do
-    quote do
-      defmodule unquote(module_name) do
-        unquote(for {atom, fn_args} <- params(module_name) do
-          case length(fn_args) do
-            0 ->
-              quote do
-                def unquote(atom)() do
-                  :ets.unquote(atom)()
-                end
-              end
-            1 ->
-              quote do
-                def unquote(atom)(unquote_splicing(fn_args)) do
-                  :ets.unquote(atom)(unquote(module_name))
-                end
-              end
-            _ ->
-              quote do
-                def unquote(atom)(unquote_splicing(fn_args)) do
-                  :ets.unquote(atom)(unquote(module_name), unquote(fn_args))
-                end
-              end
-          end
-        end)
-      end
-    end
+  defp dynamic_arg(arg_name) do
+    {arg_name, [], Elixir}
   end
 
-  defp params(module_name) do
+  defp params() do
     x =
       """
         all/0
@@ -121,21 +90,9 @@ defmodule EtsMacro do
     for elem <- String.split(x) do
       [name, args] = String.split(elem, "/")
       {num, _} = Integer.parse(args)
-      atom = String.to_atom(name)
-      fn_args =
-        case num do
-          0 -> []
-          1 -> [module_name]
-          _ -> [
-            module_name |
-            for i <- 2..num do
-              [:a, :b, :c, :d, :e, :f]
-              |> Enum.at(i)
-            end
-          ]
-        end
+      atom = String.to_atom(name);
 
-      {atom, fn_args}
+      {atom, num}
     end
   end
 end
